@@ -11,7 +11,7 @@
       state: present
   - name: start and enable mysql
     ansible.builtin.service:
-      name: mysql
+      name: mysqld
       state: started
       enabled: yes
   - name: connect mysql server
@@ -19,7 +19,7 @@
       login_user: root
       login_host: "{{ login_host }}"
       login_password: "{{ mysql_root_password }}"
-    # ignore_errors: true
+    ignore_errors: true
     register: mysql_info
   - name: print mysql info      # print mysql info
     ansible.builtin.debug:
