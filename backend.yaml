@@ -1,6 +1,9 @@
 - name: backend configuration
   hosts: backend
   become: yes
+  vars:
+    mysql_root_password: ExpenseApp@1
+    login_host: mysql.prasadking.xyz
   tasks:
   - name: install mysql
     ansible.builtin.package:
@@ -27,14 +30,14 @@
       dest: /tmp/backend.zip
   - name: unzip backend.zip
     ansible.builtin.unarchive:
-      src: /tmp/backend.zip
+      src: /tmp/backend.zip   # by default it thinks this is in ansible server
       dest: /app
       remote_src: yes
   - name: install dependencies
     ansible.builtin.command:  npm install
     args:
       chdir: /app
-  - name: copy backend conf file
+  - name: copy backend service file
     ansible.builtin.copy:
       src: backend.service
       dest: /etc/systemd/system/backend.service
