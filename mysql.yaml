@@ -10,7 +10,6 @@
       name:
       - PyMySQL
     executable: pip3.9
-    register: yes
   - name: install mysql server
     ansible.builtin.package:
       name: mysql-server
