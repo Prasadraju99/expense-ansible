@@ -1,0 +1,57 @@
+- name: create ec2 and r53 records
+  hosts: local
+  connection: local
+  vars:
+    subnet_id: "subnet-08ea666dea361801e"
+    sg_id: "sg-0f1b4e3ba768d34aa"
+    ami_id: "ami-09c813fb71547fc4f"
+    instances:                        # installing 3 ec2 instances
+    - mysql
+    - backend
+    - frontend
+    zone: prasadking.xyz
+  tasks:
+  - name: ansible to install boto3 and botocore # installing required packages
+    ansible.builtin.pip:
+      name:
+      - boto3
+      - botocore
+      executable: pip3.9
+  - name: create ec2 instance
+    amazon.aws.ec2_instance:
+      name: "{{ item }}"
+      vpc_subnet_id: "{{ subnet_id }}"
+      security_group: "{{ sg_id }}"
+      image_id: "{{ ami_id }}"
+      instance_type: "t3.micro"
+    loop: "{{ instances }}"
+    register: ec2_instances    # to capture the output of a task
+# to print the servers total output to find the ip_addresses 
+  - name: print the output
+    ansible.builtin.debug:
+      msg: "{{ ec2_instances }}"
+# Create r53 private records
+  - name: create r53 private records
+    amazon.aws.route53:
+      state: present
+      zone: "{{ zone }}"
+      record: "{{ item.item }}.{{ zone }}"
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].private_ip_address }}"
+      wait: true
+      overwrite: true
+    loop: "{{ ec2_instances.results }}"
+# Create r53 public records
+  - name: create r53 public records         
+    amazon.aws.route53:
+      state: present
+      zone: "{{ zone }}"
+      record: "{{ zone }}"
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].public_ip_address }}"
+      wait: true
+      overwrite: true
+    loop: "{{ ec2_instances.results }}"
+    when: item.item == "frontend"
