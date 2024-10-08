@@ -2,6 +2,10 @@
   hosts: backend
   become: yes
   tasks:
+  - name: install mysql
+    ansible.builtin.package:
+      name: mysql
+    state: present
   - name: disable default nodejs
     ansible.builtin.command: dnf module disable nodejs -y
   - name: enable nodejs 20 
