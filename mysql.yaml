@@ -11,7 +11,7 @@
       name: mysql
       state: started
       enabled: yes
-  vars:
+    vars:
     mysql_root_password: ExpenseApp@1
     login_host: mysql.prasadking.xyz
   - name: connect mysql server
