@@ -23,7 +23,7 @@
     ansible.builtin.get_url:
       url: https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip
       dest: /tmp/frontend.zip
-  - name: unzi/extract backend.zip
+  - name: unzip/extract backend.zip
     ansible.builtin.unarchive:
       src: /tmp/frontend.zip   # by default it thinks this is in ansible server
       dest: /usr/share/nginx/html
